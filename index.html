@@ -1,137 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Respond-O</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Respond-O</title>
 
-  <!-- GSAP CDN (safe for GitHub Pages) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #000;
-      color: #fff;
-      overflow-x: hidden;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow-x: hidden;
+  }
 
-    section {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 80px 10%;
-    }
+  section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
 
-    h1 {
-      font-size: 80px;
-      margin: 0;
-    }
+  h1 {
+    font-size: 80px;
+    margin: 0;
+  }
 
-    h2 {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
+  h2 {
+    font-size: 56px;
+    max-width: 900px;
+  }
 
-    p {
-      font-size: 20px;
-      color: #aaa;
-      max-width: 600px;
-    }
+  p {
+    font-size: 22px;
+    color: #aaa;
+  }
 
-    .hero {
-      text-align: center;
-    }
+  .dim {
+    opacity: 0.2;
+  }
 
-    .cta {
-      text-align: center;
-    }
+  .panel {
+    position: relative;
+  }
 
-    button {
-      margin-top: 20px;
-      padding: 16px 32px;
-      font-size: 18px;
-      border-radius: 999px;
-      border: none;
-      background: #fff;
-      color: #000;
-      cursor: pointer;
-    }
+  .chatbox {
+    margin-top: 30px;
+    background: #111;
+    border-radius: 20px;
+    padding: 20px;
+    width: 320px;
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.5;
+  }
 
-    /* subtle Apple-like fade sections */
-    .fade-section {
-      opacity: 0;
-      transform: translateY(60px);
-    }
-  </style>
+  .msg {
+    margin-bottom: 10px;
+  }
+
+  .user { color: #0af; }
+  .bot { color: #0f0; }
+
+  button {
+    padding: 16px 32px;
+    font-size: 18px;
+    border-radius: 999px;
+    border: none;
+    background: white;
+    color: black;
+    cursor: pointer;
+  }
+</style>
 </head>
 
 <body>
 
-  <!-- HERO -->
-  <section class="hero fade-section">
-    <h1>Respond-O</h1>
-    <p>AI chatbot that connects your knowledge base, CRMs, and Microsoft Teams.</p>
-  </section>
+<!-- HERO -->
+<section class="panel" id="hero">
+  <h1>Respond-O</h1>
+</section>
 
-  <!-- FEATURES -->
-  <section class="fade-section">
-    <h2>Smarter Conversations</h2>
-    <p>Ingest your documents and deliver accurate answers instantly.</p>
-  </section>
+<!-- PROBLEM -->
+<section class="panel">
+  <h2 class="dim">Your company’s knowledge is scattered.</h2>
+</section>
 
-  <section class="fade-section">
-    <h2>Unified CRM Access</h2>
-    <p>Connect multiple CRMs and access customer data in real time.</p>
-  </section>
+<!-- BUILD -->
+<section class="panel">
+  <h2 class="dim">Docs. CRMs. Teams. Everywhere.</h2>
+</section>
 
-  <section class="fade-section">
-    <h2>Works Where You Work</h2>
-    <p>Seamless integration with Microsoft Teams and your workflow tools.</p>
-  </section>
+<!-- MAGIC -->
+<section class="panel" id="magic">
+  <div>
+    <h2>Ask anything.</h2>
+    <p>Get answers instantly.</p>
 
-  <!-- CTA -->
-  <section class="cta fade-section">
-    <h2>Start Automating Today</h2>
+    <div class="chatbox" id="chat">
+      <div class="msg user">You: Where is client invoice?</div>
+      <div class="msg bot dim">Respond-O: Searching...</div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATION -->
+<section class="panel">
+  <h2 class="dim">Connected to everything you use.</h2>
+  <p>CRMs · Microsoft Teams · Knowledge Bases</p>
+</section>
+
+<!-- CTA -->
+<section class="panel">
+  <div>
+    <h2>One system. All answers.</h2>
     <button>Get Started</button>
-  </section>
+  </div>
+</section>
 
-  <script>
-    gsap.registerPlugin(ScrollTrigger);
+<script>
+gsap.registerPlugin(ScrollTrigger);
 
-    // Animate each section
-    document.querySelectorAll(".fade-section").forEach((section) => {
-      gsap.to(section, {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 85%",
-        }
-      });
+// PINNED STORY SCROLL
+const panels = gsap.utils.toArray(".panel");
+
+panels.forEach((panel, i) => {
+  gsap.to(panel, {
+    scrollTrigger: {
+      trigger: panel,
+      start: "top top",
+      pin: true,
+      pinSpacing: false,
+    }
+  });
+});
+
+// TEXT REVEAL
+gsap.utils.toArray("h2").forEach((el) => {
+  gsap.to(el, {
+    opacity: 1,
+    duration: 1,
+    scrollTrigger: {
+      trigger: el,
+      start: "top 70%",
+      scrub: true
+    }
+  });
+});
+
+// CHATBOT DEMO ANIMATION
+ScrollTrigger.create({
+  trigger: "#magic",
+  start: "top center",
+  onEnter: () => {
+    gsap.to("#chat .bot", {
+      opacity: 1,
+      duration: 1,
+      delay: 0.5,
+      onComplete: () => {
+        document.querySelector("#chat .bot").innerHTML =
+          "Respond-O: Found it in Salesforce. Sent to your email.";
+      }
     });
+  }
+});
 
-    // Optional: smooth hero intro
-    gsap.from(".hero h1", {
-      opacity: 0,
-      y: 40,
-      duration: 1.2
-    });
-
-    gsap.from(".hero p", {
-      opacity: 0,
-      y: 20,
-      duration: 1.2,
-      delay: 0.3
-    });
-
-    ScrollTrigger.refresh();
-  </script>
+// HERO INTRO
+gsap.from("#hero h1", {
+  opacity: 0,
+  y: 50,
+  duration: 1.5
+});
+</script>
 
 </body>
 </html>
