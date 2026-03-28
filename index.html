@@ -8,14 +8,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
 <style>
+/* --- GLOBAL --- */
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body {
   font-family:'Inter',sans-serif;
-  color:#1d1d1f;
+  color:white;
+  overflow-x:hidden;
 }
 
-/* NAV */
+/* --- AMBIENT BACKGROUND --- */
+body::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-10;
+  background:
+    radial-gradient(circle at 20% 30%, #ff7a00, transparent 40%),
+    radial-gradient(circle at 80% 70%, #00cfff, transparent 40%),
+    radial-gradient(circle at 50% 50%, #6a00ff, transparent 50%);
+  filter: blur(80px);
+  opacity:0.4;
+  animation: flow 20s infinite alternate ease-in-out;
+}
+@keyframes flow {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(-50px,-80px) scale(1.2); }
+}
+
+/* --- NAV --- */
 .nav {
   position:fixed;
   width:100%;
@@ -30,15 +50,30 @@ body {
   display:flex;
   justify-content:space-between;
 }
-
-/* SECTIONS */
-section {
-  position:relative;
-  padding:160px 20px;
-  text-align:center;
-  color:white;
+.nav a {
+  margin-left:20px;
+  text-decoration:none;
+  color:#333;
+  font-weight:500;
 }
 
+/* --- SECTIONS --- */
+section {
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:120px 20px;
+  transition: all 1s cubic-bezier(.22,1,.36,1);
+}
+section.inactive {
+  transform: scale(0.96);
+  filter: blur(6px);
+  opacity:0.6;
+}
 .section-bg {
   position:absolute;
   inset:0;
@@ -46,7 +81,6 @@ section {
   background-position:center;
   z-index:-2;
 }
-
 .overlay {
   position:absolute;
   inset:0;
@@ -54,48 +88,22 @@ section {
   z-index:-1;
 }
 
-/* HERO */
+/* --- HERO --- */
 .hero .section-bg {
   background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee');
 }
-
-/* DEMO */
-.demo .section-bg {
-  background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475');
-}
-
-/* FEATURES */
-.features .section-bg {
-  background-image:url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa');
-}
-
-/* DARK */
-.dark .section-bg {
-  background-image:url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564');
-}
-
-/* CTA */
-.cta .section-bg {
-  background-image:url('https://images.unsplash.com/photo-1447433819943-74a20887a5c4');
-}
-
-/* TEXT */
-h1 {
+.hero-headlines { position:relative; height:200px; }
+.story-text {
+  position:absolute;
+  width:100%;
   font-size:64px;
-  margin-bottom:20px;
+  opacity:0;
+  transform:translateY(40px) scale(0.95);
+  transition: all 0.6s ease;
 }
-h2 {
-  font-size:42px;
-  margin-bottom:16px;
-}
-p {
-  font-size:20px;
-  color:#ddd;
-  max-width:600px;
-  margin:auto;
-}
+p { font-size:20px; max-width:600px; margin:auto; color:#ddd; }
 
-/* BUTTON */
+/* --- BUTTONS --- */
 .btn {
   margin-top:20px;
   padding:14px 28px;
@@ -104,12 +112,25 @@ p {
   color:white;
   border:none;
   cursor:pointer;
+  position: relative;
+  overflow:hidden;
+  transition: transform 0.2s ease;
 }
+.btn::after {
+  content:"";
+  position:absolute;
+  width:200%;
+  height:200%;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  background:radial-gradient(circle, rgba(255,255,255,0.4), transparent 60%);
+  opacity:0;
+  transition: opacity 0.3s;
+}
+.btn:hover::after { opacity:1; }
 
-/* WAITLIST */
-.waitlist {
-  margin-top:30px;
-}
+/* --- WAITLIST --- */
+.waitlist { margin-top:30px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .waitlist input {
   padding:14px;
   border-radius:999px;
@@ -118,7 +139,6 @@ p {
 }
 .waitlist button {
   padding:14px 20px;
-  margin-left:10px;
   border:none;
   border-radius:999px;
   background:#ff7a00;
@@ -126,7 +146,7 @@ p {
   cursor:pointer;
 }
 
-/* GRID */
+/* --- GRID --- */
 .grid {
   margin-top:40px;
   display:grid;
@@ -135,16 +155,64 @@ p {
 @media(min-width:768px){
   .grid { grid-template-columns:repeat(3,1fr); }
 }
-
-/* ANIMATION */
-.fade {
-  opacity:0;
-  transform:translateY(40px);
-  transition:0.8s;
+.grid div {
+  padding:30px;
+  border-radius:20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border:1px solid rgba(255,255,255,0.15);
+  transition: all 0.4s ease;
 }
-.fade.show {
-  opacity:1;
-  transform:translateY(0);
+.grid div:hover {
+  transform: translateY(-10px) scale(1.03);
+  background: rgba(255,255,255,0.12);
+}
+
+/* --- FADE ANIMATION --- */
+.fade { opacity:0; transform:translateY(40px); transition:0.8s; }
+.fade.show { opacity:1; transform:translateY(0); }
+
+/* --- DEMO FRAMES --- */
+.demo-container {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 400px;
+  margin: 40px auto 0;
+  perspective: 1200px;
+}
+.demo-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #fff;
+  opacity: 0;
+  transform: rotateY(0deg) translateZ(0);
+  transition: all 1s cubic-bezier(.22,1,.36,1);
+}
+.demo-frame.active {
+  opacity: 1;
+  transform: rotateY(0deg) translateZ(0);
+}
+.demo-frame.left {
+  transform: rotateY(-30deg) translateX(-50px) translateZ(-100px);
+  opacity: 0.2;
+}
+.demo-frame.right {
+  transform: rotateY(30deg) translateX(50px) translateZ(-100px);
+  opacity: 0.2;
+}
+
+/* --- RESPONSIVE --- */
+@media(max-width:768px){
+  h1 { font-size:40px; }
+  h2 { font-size:28px; }
 }
 </style>
 </head>
@@ -162,83 +230,85 @@ p {
 </div>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero fade">
   <div class="section-bg"></div>
   <div class="overlay"></div>
 
-  <div class="fade">
-    <h1>One Chat Widget.<br>All Your CRMs.</h1>
-    <p>Built on the beauty of moments that matter — like sunrise and sunset.</p>
+  <div class="hero-headlines">
+    <h1 class="story-text">One Chat Widget</h1>
+    <h1 class="story-text">All Your CRMs</h1>
+    <h1 class="story-text">Zero Friction</h1>
+  </div>
 
-    <!-- WAITLIST -->
-    <div class="waitlist">
-      <input type="email" id="email" placeholder="Enter your email">
-      <button onclick="joinWaitlist()">Join Waitlist</button>
+  <p>Built on the beauty of moments that matter — like sunrise and sunset.</p>
+
+  <!-- WAITLIST -->
+  <div class="waitlist">
+    <input type="email" id="email" placeholder="Enter your email">
+    <button onclick="joinWaitlist()">Join Waitlist</button>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="features fade">
+  <div class="section-bg"></div>
+  <div class="overlay"></div>
+
+  <h2>Everything. Connected.</h2>
+
+  <div class="grid">
+    <div>
+      <h3>Multi-CRM Sync</h3>
+      <p>All systems, one conversation.</p>
+    </div>
+    <div>
+      <h3>Automation</h3>
+      <p>Resolve instantly.</p>
+    </div>
+    <div>
+      <h3>Enterprise Ready</h3>
+      <p>Built to scale.</p>
     </div>
   </div>
 </section>
 
 <!-- DEMO -->
-<section id="demo" class="demo">
+<section id="demo" class="demo fade">
   <div class="section-bg"></div>
   <div class="overlay"></div>
 
-  <div class="fade">
-    <h2>See it in action</h2>
-    <p>Interact with the widget below.</p>
-    <script src="respond-o.js"></script>
-  </div>
-</section>
+  <h2>See it in action</h2>
+  <p>Interact with the widget below.</p>
 
-<!-- FEATURES -->
-<section id="features" class="features">
-  <div class="section-bg"></div>
-  <div class="overlay"></div>
-
-  <div class="fade">
-    <h2>Everything. Connected.</h2>
-
-    <div class="grid">
-      <div>
-        <h3>Multi-CRM Sync</h3>
-        <p>All systems, one conversation.</p>
-      </div>
-      <div>
-        <h3>Automation</h3>
-        <p>Resolve instantly.</p>
-      </div>
-      <div>
-        <h3>Enterprise Ready</h3>
-        <p>Built to scale.</p>
-      </div>
-    </div>
+  <!-- Animated demo container -->
+  <div class="demo-container">
+    <div class="demo-frame" id="frame1">Chat Open</div>
+    <div class="demo-frame" id="frame2">CRM Sync</div>
+    <div class="demo-frame" id="frame3">Automation</div>
+    <div class="demo-frame" id="frame4">Analytics</div>
   </div>
 </section>
 
 <!-- DARK -->
-<section class="dark">
+<section class="dark fade">
   <div class="section-bg"></div>
   <div class="overlay"></div>
 
-  <div class="fade">
-    <h2>Built for scale</h2>
-    <p>Like rockets rising, your support grows without limits.</p>
-  </div>
+  <h2>Built for scale</h2>
+  <p>Like rockets rising, your support grows without limits.</p>
 </section>
 
 <!-- CTA -->
-<section class="cta">
+<section class="cta fade">
   <div class="section-bg"></div>
   <div class="overlay"></div>
 
-  <div class="fade">
-    <h2>Start using Respond O</h2>
-    <button class="btn" onclick="joinWaitlist()">Get Early Access</button>
-  </div>
+  <h2>Start using Respond O</h2>
+  <button class="btn" onclick="joinWaitlist()">Get Early Access</button>
 </section>
 
 <script>
-/* Fade animation */
+/* --- FADE ON SCROLL --- */
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
@@ -248,15 +318,65 @@ const observer = new IntersectionObserver(entries=>{
 });
 document.querySelectorAll('.fade').forEach(el=>observer.observe(el));
 
-/* Waitlist logic (local storage for now) */
+/* --- SECTION BLUR & SCALE --- */
+const sections = document.querySelectorAll("section");
+const observer2 = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.remove("inactive");
+    } else {
+      entry.target.classList.add("inactive");
+    }
+  });
+},{ threshold: 0.6 });
+sections.forEach(sec => observer2.observe(sec));
+
+/* --- HERO HEADLINE MORPH --- */
+const texts = document.querySelectorAll(".story-text");
+window.addEventListener("scroll", () => {
+  const section = document.querySelector(".hero");
+  const rect = section.getBoundingClientRect();
+  const progress = Math.min(Math.max(-rect.top / (rect.height - window.innerHeight), 0), 1);
+  const index = Math.floor(progress * texts.length);
+  texts.forEach((el,i)=>{
+    if(i===index){ el.style.opacity=1; el.style.transform="translateY(0) scale(1)"; }
+    else{ el.style.opacity=0; el.style.transform="translateY(40px) scale(0.95)"; }
+  });
+});
+
+/* --- MAGNETIC BUTTONS --- */
+document.querySelectorAll('.btn').forEach(btn=>{
+  btn.addEventListener('mousemove', e=>{
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width/2;
+    const y = e.clientY - rect.top - rect.height/2;
+    btn.style.transform = `translate(${x*0.2}px, ${y*0.2}px) scale(1.05)`;
+  });
+  btn.addEventListener('mouseleave', ()=>{ btn.style.transform=""; });
+});
+
+/* --- DEMO SCROLL ANIMATION --- */
+const demoFrames = document.querySelectorAll(".demo-frame");
+const demoSection = document.querySelector("#demo");
+window.addEventListener("scroll", () => {
+  const rect = demoSection.getBoundingClientRect();
+  const progress = Math.min(Math.max(-rect.top / (rect.height - window.innerHeight), 0), 1);
+  const index = Math.floor(progress * demoFrames.length);
+  demoFrames.forEach((frame, i) => {
+    frame.classList.remove("active","left","right");
+    if(i === index) frame.classList.add("active");
+    else if(i < index) frame.classList.add("left");
+    else frame.classList.add("right");
+  });
+});
+
+/* --- WAITLIST --- */
 function joinWaitlist(){
   const email = document.getElementById('email').value;
   if(!email) return alert("Enter email");
-
   let list = JSON.parse(localStorage.getItem('waitlist') || "[]");
   list.push(email);
   localStorage.setItem('waitlist', JSON.stringify(list));
-
   alert("You're on the waitlist 🚀");
 }
 </script>
