@@ -1,9 +1,13 @@
 import OpenAI from "openai";
 import fs from "fs";
 
-// ✅ SAFE JSON LOAD (Vercel compatible)
-const kbPath = new URL("../kb-embeddings.json", import.meta.url);
-const kb = JSON.parse(fs.readFileSync(kbPath, "utf-8"));
+// ✅ Load KB safely (NO import / NO assert / NO with)
+const kb = JSON.parse(
+  fs.readFileSync(
+    new URL("../kb-embeddings.json", import.meta.url),
+    "utf-8"
+  )
+);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -11,8 +15,9 @@ const openai = new OpenAI({
 
 export default async function handler(req, res) {
   try {
+    // Only allow POST
     if (req.method !== "POST") {
-      return res.status(405).json({ error: "Only POST allowed" });
+      return res.status(405).json({ error: "Use POST method only" });
     }
 
     const { message } = req.body;
@@ -21,23 +26,24 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Simple KB search
+    // Simple KB search (basic fallback logic)
     const relevantDocs = kb.filter((item) =>
       JSON.stringify(item).toLowerCase().includes(message.toLowerCase())
     );
 
     const context = relevantDocs
       .slice(0, 3)
-      .map((d) => d.text || "")
+      .map((doc) => doc.text || JSON.stringify(doc))
       .join("\n");
 
+    // OpenAI response
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful AI assistant. Use context when relevant.",
+            "You are a helpful AI assistant. Use the provided context if relevant.",
         },
         {
           role: "user",
