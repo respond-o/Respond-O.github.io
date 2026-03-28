@@ -1,182 +1,53 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function RespondOVision() {
+export default function RespondOEngine() {
   const container = useRef(null);
-  const panel1 = useRef(null);
-  const panel2 = useRef(null);
-  const panel3 = useRef(null);
-
-  const [chat, setChat] = useState([]);
-  const [input, setInput] = useState("");
-  const [ticket, setTicket] = useState(false);
+  const panel = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
 
-      // PIN MASTER TIMELINE (Apple style scroll scrubbing)
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container.current,
           start: "top top",
-          end: "+=3000",
+          end: "+=2000",
           scrub: true,
           pin: true,
-        },
+        }
       });
 
-      tl.to(panel1.current, { opacity: 0, scale: 0.98 }, 0)
-        .fromTo(panel2.current, { opacity: 0, y: 80 }, { opacity: 1, y: 0 }, 0.2)
-        .to(panel2.current, { opacity: 0, scale: 1.02 }, 1)
-        .fromTo(panel3.current, { opacity: 0, y: 80 }, { opacity: 1, y: 0 }, 1.2);
+      tl.to(panel.current, {
+        scale: 1.05,
+        opacity: 0,
+        duration: 1
+      });
 
-      ScrollTrigger.refresh();
     }, container);
 
     return () => ctx.revert();
   }, []);
 
-  const kb = {
-    billing: "Billing is managed via Stripe portal inside settings.",
-    password: "Reset via security settings → password reset.",
-    zendesk: "Escalations are automatically routed to Zendesk."
-  };
-
-  const send = () => {
-    if (!input) return;
-
-    let response = "";
-    let found = false;
-
-    Object.keys(kb).forEach((k) => {
-      if (input.toLowerCase().includes(k)) {
-        response = kb[k];
-        found = true;
-      }
-    });
-
-    if (!found) {
-      response = "Not found → escalating to Zendesk ticket.";
-      setTicket(true);
-    }
-
-    setChat((c) => [...c, { role: "user", text: input }, { role: "bot", text: response }]);
-    setInput("");
-  };
-
   return (
-    <div ref={container} className="bg-black text-white overflow-hidden">
+    <div ref={container} className="h-screen bg-black text-white overflow-hidden">
 
-      {/* HERO / PANEL 1 */}
-      <section ref={panel1} className="h-screen flex items-center justify-center px-10 relative">
-        <div className="text-center max-w-3xl">
-          <h1 className="text-6xl font-semibold tracking-tight">
+      <div
+        ref={panel}
+        className="h-screen flex items-center justify-center text-center px-10"
+      >
+        <div>
+          <h1 className="text-6xl font-semibold">
             Respond-O
           </h1>
-          <p className="text-gray-400 mt-6 text-xl">
-            The AI orchestration layer for customer support.
-          </p>
-
-          <p className="text-gray-600 mt-10">
-            Scroll to transform fragmented tools into one intelligent system.
+          <p className="text-gray-400 mt-6 text-lg">
+            AI support orchestration layer across all CRMs
           </p>
         </div>
-      </section>
-
-      {/* PANEL 2 — PROBLEM → PRODUCT */}
-      <section ref={panel2} className="h-screen flex items-center justify-center px-10 absolute top-0 w-full">
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl w-full items-center">
-
-          {/* LEFT: FRAGMENTED SYSTEM */}
-          <div className="space-y-4">
-            <h2 className="text-4xl font-semibold">
-              Fragmented support stack
-            </h2>
-
-            {["Zendesk", "HubSpot", "Salesforce", "Notion KB"].map((i) => (
-              <div key={i} className="p-4 border border-gray-800 rounded-xl bg-gray-950">
-                {i}
-              </div>
-            ))}
-          </div>
-
-          {/* RIGHT: ORCHESTRATION */}
-          <div className="space-y-4">
-            <h2 className="text-4xl font-semibold">
-              Respond-O layer
-            </h2>
-
-            <div className="p-6 rounded-2xl border border-gray-700 bg-gradient-to-b from-gray-900 to-black">
-              <p className="text-gray-400">
-                AI routes, resolves, or escalates every request automatically.
-              </p>
-
-              <div className="mt-6 text-sm text-gray-500">
-                → CRM integration layer<br />
-                → Knowledge base retrieval<br />
-                → Ticket escalation engine
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PANEL 3 — OUTCOME + LIVE SYSTEM */}
-      <section ref={panel3} className="h-screen flex items-center justify-center px-10 absolute top-0 w-full">
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl w-full">
-
-          {/* CHAT SYSTEM */}
-          <div className="border border-gray-800 rounded-2xl p-5 bg-black">
-            <h3 className="text-xl mb-4">Live Support Brain</h3>
-
-            <div className="h-64 overflow-y-auto space-y-2 mb-4">
-              {chat.map((m, i) => (
-                <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
-                  <span className="text-sm text-gray-300">{m.text}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="flex-1 px-3 py-2 rounded bg-gray-900"
-                placeholder="Ask support..."
-              />
-              <button onClick={send} className="px-4 py-2 bg-white text-black rounded">
-                Send
-              </button>
-            </div>
-
-            {ticket && (
-              <div className="mt-4 text-yellow-400 text-xs">
-                Escalated → Zendesk ticket created
-              </div>
-            )}
-          </div>
-
-          {/* OUTCOME METRICS */}
-          <div className="flex flex-col justify-center space-y-6">
-            <h2 className="text-4xl font-semibold">
-              Resolution without friction
-            </h2>
-
-            <div className="space-y-3 text-gray-400">
-              <p>↓ 70% ticket volume reduction</p>
-              <p>↓ 60% faster resolution time</p>
-              <p>↑ 3x customer satisfaction</p>
-            </div>
-
-            <div className="p-6 border border-gray-800 rounded-2xl bg-gray-950">
-              AI handles Tier-1 support automatically. Humans only handle edge cases.
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
 
     </div>
   );
