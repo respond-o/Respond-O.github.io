@@ -6,186 +6,122 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function RespondOLanding() {
   const heroRef = useRef(null);
-  const sectionRefs = useRef([]);
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const section1 = useRef(null);
+  const section2 = useRef(null);
 
+  const [email, setEmail] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatLog, setChatLog] = useState([
-    { role: "bot", text: "Hi, I’m Respond-O. Ask me anything from the knowledge base." }
+    { role: "bot", text: "Hi, I’m Respond-O. Ask me something." }
   ]);
-
   const [ticketMode, setTicketMode] = useState(false);
 
   useEffect(() => {
-    gsap.fromTo(
-      heroRef.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1.2 }
-    );
+    const ctx = gsap.context(() => {
+      // HERO
+      gsap.from(heroRef.current, {
+        opacity: 0,
+        y: 30,
+        duration: 1.2,
+        ease: "power3.out",
+      });
 
-    sectionRefs.current.forEach((sec) => {
-      if (!sec) return;
+      // PIN 1
+      gsap.from(section1.current, {
+        opacity: 0.2,
+        scrollTrigger: {
+          trigger: section1.current,
+          start: "top center",
+          end: "bottom center",
+          scrub: true,
+        },
+      });
 
-      gsap.fromTo(
-        sec,
-        { opacity: 0.2, scale: 0.98 },
-        {
-          opacity: 1,
-          scale: 1,
-          scrollTrigger: {
-            trigger: sec,
-            start: "top center",
-            end: "bottom center",
-            scrub: true,
-          },
-        }
-      );
+      // PIN 2
+      gsap.from(section2.current, {
+        opacity: 0.2,
+        scrollTrigger: {
+          trigger: section2.current,
+          start: "top center",
+          end: "bottom center",
+          scrub: true,
+        },
+      });
+
+      ScrollTrigger.refresh();
     });
+
+    return () => ctx.revert(); // IMPORTANT cleanup
   }, []);
 
-  const analytics = (event, data = {}) => {
-    console.log("analytics:", event, data);
-  };
-
-  const mockKnowledgeBase = {
-    "reset password": "Go to Settings → Security → Reset Password.",
-    "billing": "Billing is handled via Stripe. You can update invoices in account settings.",
-    "integration": "Respond-O integrates with Zendesk, HubSpot, Salesforce via API keys."
+  const mockKB = {
+    billing: "Go to billing settings to update your plan.",
+    password: "Reset password via security settings.",
+    integration: "Supports Zendesk, HubSpot, Salesforce APIs."
   };
 
   const handleChat = () => {
     if (!chatInput) return;
 
-    const query = chatInput.toLowerCase();
     let response = "";
-    let isUnknown = true;
+    let found = false;
 
-    Object.keys(mockKnowledgeBase).forEach((key) => {
-      if (query.includes(key)) {
-        response = mockKnowledgeBase[key];
-        isUnknown = false;
+    Object.keys(mockKB).forEach((k) => {
+      if (chatInput.toLowerCase().includes(k)) {
+        response = mockKB[k];
+        found = true;
       }
     });
 
-    const newLog = [
-      ...chatLog,
-      { role: "user", text: chatInput },
-    ];
-
-    if (isUnknown) {
+    if (!found) {
+      response = "Not found in KB → escalating to Zendesk ticket.";
       setTicketMode(true);
-      response = "I couldn’t find this in the knowledge base. I’ll raise a support ticket for you.";
     }
 
-    setChatLog([...newLog, { role: "bot", text: response }]);
+    setChatLog([
+      ...chatLog,
+      { role: "user", text: chatInput },
+      { role: "bot", text: response }
+    ]);
+
     setChatInput("");
-
-    analytics("chat_query", { query, resolved: !isUnknown });
-  };
-
-  const submitWaitlist = () => {
-    if (!email) return;
-    setSubmitted(true);
-    analytics("waitlist_signup", { email });
   };
 
   return (
-    <div className="bg-black text-white overflow-x-hidden">
+    <div className="bg-black text-white">
 
-      {/* NAV */}
-      <div className="fixed top-0 w-full flex justify-between px-10 py-6 z-50 bg-black/40 backdrop-blur">
-        <div className="font-semibold">Respond-O</div>
-        <button className="px-4 py-2 bg-white text-black rounded-full">
-          Request Access
-        </button>
-      </div>
-
-      {/* HERO VIDEO */}
-      <section ref={heroRef} className="h-screen flex items-center justify-center relative">
-        <video
-          autoPlay
-          muted
-          loop
-          className="absolute w-full h-full object-cover opacity-40"
-        >
-          <source src="https://cdn.coverr.co/videos/coverr-a-person-typing-on-a-laptop-3776/1080p.mp4" />
-        </video>
-
-        <div className="relative text-center px-6 max-w-3xl">
-          <h1 className="text-6xl font-semibold">
-            One AI layer across every support system.
+      {/* HERO */}
+      <section ref={heroRef} className="h-screen flex items-center justify-center text-center px-6">
+        <div>
+          <h1 className="text-5xl font-semibold">
+            Respond-O
           </h1>
-          <p className="text-gray-300 mt-6">
-            Respond-O connects your CRM, knowledge base, and support desk into a single intelligent chat interface.
+          <p className="text-gray-400 mt-4">
+            AI support layer across all your CRMs
           </p>
-
-          <button
-            onClick={() => analytics("cta_hero")}
-            className="mt-8 px-6 py-3 bg-white text-black rounded-full"
-          >
-            Join Private Beta
-          </button>
         </div>
       </section>
 
-      {/* PINNED SECTION 1 */}
-      <section ref={(el) => (sectionRefs.current[0] = el)} className="h-screen flex items-center justify-center px-10">
-        <div className="text-center max-w-3xl">
-          <h2 className="text-5xl font-semibold">
-            Replace fragmented support tools.
+      {/* SECTION 1 */}
+      <section ref={section1} className="h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-xl">
+          <h2 className="text-4xl font-semibold">
+            One chatbot. Every system.
           </h2>
-          <p className="text-gray-400 mt-6">
-            Instead of switching between Zendesk, Intercom, and CRMs — Respond-O orchestrates them all.
+          <p className="text-gray-500 mt-4">
+            Zendesk, HubSpot, Salesforce — unified support routing.
           </p>
-        </div>
-      </section>
-
-      {/* PINNED SECTION 2 - CRM ROUTING */}
-      <section ref={(el) => (sectionRefs.current[1] = el)} className="h-screen flex items-center justify-center px-10 bg-gray-950">
-        <div className="grid md:grid-cols-2 gap-10 max-w-6xl w-full">
-
-          <div className="border border-gray-800 rounded-2xl p-6">
-            <h3 className="text-xl mb-4">Ticket Routing Engine</h3>
-
-            {["Zendesk Ticket", "HubSpot Deal", "Salesforce Case", "API Webhook"].map((item) => (
-              <div
-                key={item}
-                className="p-3 mb-3 bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-800"
-                onClick={() => analytics("routing_click", { item })}
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <h2 className="text-4xl font-semibold">
-              One input. Any system.
-            </h2>
-            <p className="text-gray-400 mt-4">
-              Respond-O intelligently routes every request to the right backend — no manual triage.
-            </p>
-          </div>
         </div>
       </section>
 
       {/* CHAT DEMO */}
-      <section className="py-40 px-10 bg-black">
-        <h2 className="text-center text-5xl font-semibold mb-10">
-          Knowledge-aware AI chat
-        </h2>
-
-        <div className="max-w-3xl mx-auto border border-gray-800 rounded-2xl p-6 bg-gray-950">
-          <div className="h-80 overflow-y-auto space-y-3 mb-4">
-            {chatLog.map((msg, i) => (
-              <div
-                key={i}
-                className={msg.role === "user" ? "text-right" : "text-left"}
-              >
-                <span className={msg.role === "user" ? "text-blue-400" : "text-gray-300"}>
-                  {msg.text}
-                </span>
+      <section className="py-40 px-6">
+        <div className="max-w-xl mx-auto border border-gray-800 p-4 rounded-xl">
+          
+          <div className="h-60 overflow-y-auto space-y-2 mb-4">
+            {chatLog.map((m, i) => (
+              <div key={i} className={m.role === "user" ? "text-right" : "text-left"}>
+                <span className="text-sm text-gray-300">{m.text}</span>
               </div>
             ))}
           </div>
@@ -194,73 +130,34 @@ export default function RespondOLanding() {
             <input
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Ask something..."
-              className="flex-1 px-4 py-2 rounded-full bg-gray-900 border border-gray-700"
+              className="flex-1 px-3 py-2 bg-gray-900 rounded"
+              placeholder="Ask..."
             />
-            <button
-              onClick={handleChat}
-              className="px-5 py-2 bg-white text-black rounded-full"
-            >
+            <button onClick={handleChat} className="px-4 py-2 bg-white text-black rounded">
               Send
             </button>
           </div>
 
           {ticketMode && (
-            <div className="mt-6 p-4 border border-yellow-500/40 bg-yellow-500/10 rounded-xl">
-              <p className="text-sm text-yellow-200">
-                Escalation triggered → Ticket will be logged into Zendesk.
-              </p>
+            <div className="mt-4 text-yellow-400 text-sm">
+              Escalation → Zendesk ticket created
             </div>
           )}
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="py-40 px-10 bg-gray-950">
-        <h2 className="text-center text-5xl font-semibold mb-20">
-          Built for scale
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {[
-            "Multi-CRM ticket orchestration",
-            "Knowledge base ingestion",
-            "API-first architecture",
-            "Zendesk fallback escalation",
-            "AI intent detection layer",
-            "Unified support analytics"
-          ].map((f) => (
-            <div key={f} className="p-6 border border-gray-800 rounded-2xl bg-black">
-              {f}
-            </div>
-          ))}
+      {/* SECTION 2 */}
+      <section ref={section2} className="h-screen flex items-center justify-center px-6">
+        <div className="text-center">
+          <h2 className="text-4xl font-semibold">
+            Knowledge-aware AI
+          </h2>
+          <p className="text-gray-500 mt-4">
+            Responds instantly or escalates when unknown
+          </p>
         </div>
       </section>
 
-      {/* WAITLIST */}
-      <section className="py-40 px-10 text-center">
-        <h2 className="text-5xl font-semibold">Get early access</h2>
-        <p className="text-gray-400 mt-4">Private beta for modern support teams.</p>
-
-        <div className="mt-10 flex justify-center gap-3">
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-4 py-3 rounded-full bg-gray-900 border border-gray-700"
-            placeholder="Enter email"
-          />
-          <button
-            onClick={submitWaitlist}
-            className="px-6 py-3 bg-white text-black rounded-full"
-          >
-            {submitted ? "You're on list" : "Join waitlist"}
-          </button>
-        </div>
-      </section>
-
-      <footer className="py-10 text-center text-gray-600 text-sm">
-        © 2026 Respond-O
-      </footer>
     </div>
   );
 }
