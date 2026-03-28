@@ -1,10 +1,9 @@
 import OpenAI from "openai";
 import fs from "fs";
 
-// Load KB safely for Vercel (NO import assertions)
-const kb = JSON.parse(
-  fs.readFileSync(new URL("../kb-embeddings.json", import.meta.url))
-);
+// ✅ SAFE JSON LOAD (Vercel compatible)
+const kbPath = new URL("../kb-embeddings.json", import.meta.url);
+const kb = JSON.parse(fs.readFileSync(kbPath, "utf-8"));
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -13,7 +12,7 @@ const openai = new OpenAI({
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
+      return res.status(405).json({ error: "Only POST allowed" });
     }
 
     const { message } = req.body;
@@ -22,12 +21,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Basic KB search (simple keyword match fallback)
+    // Simple KB search
     const relevantDocs = kb.filter((item) =>
       JSON.stringify(item).toLowerCase().includes(message.toLowerCase())
     );
 
-    const context = relevantDocs.slice(0, 3).map((d) => d.text || "").join("\n");
+    const context = relevantDocs
+      .slice(0, 3)
+      .map((d) => d.text || "")
+      .join("\n");
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -35,7 +37,7 @@ export default async function handler(req, res) {
         {
           role: "system",
           content:
-            "You are a helpful AI assistant. Use the provided knowledge base context if relevant.",
+            "You are a helpful AI assistant. Use context when relevant.",
         },
         {
           role: "user",
@@ -52,6 +54,7 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error(error);
+
     return res.status(500).json({
       error: "Server error",
       details: error.message,
