@@ -576,6 +576,236 @@ footer {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
+/* ════════════════════════════════════
+   RESPOND-O LIVE WIDGET
+════════════════════════════════════ */
+#ro-widget {
+  position: fixed; bottom: 28px; right: 28px;
+  z-index: 9000; font-family: var(--sans);
+}
+
+#ro-toggle {
+  width: 60px; height: 60px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border: none; cursor: none;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(0,201,167,0.3), 0 2px 8px rgba(0,0,0,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+#ro-toggle:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 16px 48px rgba(0,201,167,0.4); }
+
+#ro-notif {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #ef4444; border: 2px solid var(--midnight);
+  font-size: 10px; font-weight: 700; color: #fff;
+  display: none; align-items: center; justify-content: center;
+}
+
+/* Window */
+#ro-window {
+  position: absolute; bottom: 72px; right: 0;
+  width: 400px; height: 620px;
+  background: #080f1e;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  box-shadow: 0 32px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,201,167,0.05) inset;
+  display: flex; flex-direction: column; overflow: hidden;
+  transform-origin: bottom right;
+  transform: scale(0.9) translateY(16px);
+  opacity: 0; pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+}
+#ro-window.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+/* Header */
+.ro-hd {
+  background: linear-gradient(135deg, rgba(0,201,167,0.08), rgba(14,165,233,0.05));
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+
+.ro-hd-av {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 15px; font-weight: 600;
+  color: #000; flex-shrink: 0;
+}
+
+.ro-hd-name {
+  font-family: var(--serif); font-size: 16px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.2px;
+}
+
+.ro-hd-status {
+  font-size: 11px; color: var(--teal);
+  display: flex; align-items: center; gap: 5px; margin-top: 2px;
+}
+.ro-hd-status::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--teal); border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+.ro-hd-btns { margin-left: auto; display: flex; gap: 4px; }
+.ro-hd-btn {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  cursor: none; display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: background 0.15s, color 0.15s;
+}
+.ro-hd-btn:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+
+/* Messages */
+#ro-msgs {
+  flex: 1; overflow-y: auto; padding: 18px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  scroll-behavior: smooth;
+}
+#ro-msgs::-webkit-scrollbar { width: 3px; }
+#ro-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+.ro-msg { display: flex; gap: 8px; animation: ro-fadein 0.3s ease; }
+.ro-msg.user { flex-direction: row-reverse; }
+
+@keyframes ro-fadein {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ro-av {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;
+}
+.ro-msg.bot .ro-av { background: linear-gradient(135deg, rgba(0,201,167,0.2), rgba(14,165,233,0.15)); color: var(--teal); }
+.ro-msg.user .ro-av { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+.ro-bubble {
+  max-width: 78%; padding: 10px 14px; border-radius: 14px;
+  font-size: 13.5px; line-height: 1.55; color: var(--text);
+}
+.ro-msg.bot .ro-bubble {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06);
+  border-top-left-radius: 3px;
+}
+.ro-msg.user .ro-bubble {
+  background: linear-gradient(135deg, rgba(0,201,167,0.15), rgba(14,165,233,0.1));
+  border: 1px solid rgba(0,201,167,0.2);
+  border-top-right-radius: 3px; text-align: right;
+}
+
+/* Quick replies */
+.ro-qrs { display: flex; flex-wrap: wrap; gap: 6px; padding-left: 36px; }
+.ro-qr {
+  background: rgba(0,201,167,0.06); border: 1px solid rgba(0,201,167,0.2);
+  color: var(--teal); font-size: 12px; font-family: var(--sans);
+  padding: 5px 12px; border-radius: 20px; cursor: none;
+  transition: background 0.15s; white-space: nowrap;
+}
+.ro-qr:hover { background: rgba(0,201,167,0.15); }
+
+/* Article cards */
+.ro-article {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-left: 2px solid rgba(0,201,167,0.3);
+  border-radius: 8px; padding: 10px 12px; cursor: none; margin-top: 4px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ro-article:hover { background: rgba(0,201,167,0.06); border-left-color: var(--teal); }
+.ro-article-title { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.ro-article-desc { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+/* Forms */
+.ro-form {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 14px; margin-top: 4px;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.ro-form-title {
+  font-family: var(--serif); font-size: 14px; font-weight: 600;
+  color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;
+}
+.ro-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
+.ro-field { display: flex; flex-direction: column; gap: 2px; }
+.ro-inp, .ro-sel, .ro-ta {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 7px; padding: 8px 11px; font-size: 12.5px;
+  font-family: var(--sans); color: var(--text); outline: none; width: 100%;
+  transition: border-color 0.15s;
+}
+.ro-inp:focus, .ro-sel:focus, .ro-ta:focus { border-color: rgba(0,201,167,0.4); }
+.ro-inp::placeholder, .ro-ta::placeholder { color: var(--muted); }
+.ro-sel { cursor: none; }
+.ro-sel option { background: #080f1e; }
+.ro-ta { resize: none; line-height: 1.5; }
+.ro-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.ro-btn {
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: #000; border: none; border-radius: 8px;
+  padding: 9px 14px; font-size: 12.5px; font-weight: 600;
+  font-family: var(--sans); cursor: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.ro-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.ro-btn-ghost {
+  background: transparent; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 7px 14px; color: var(--muted);
+  font-size: 12px; font-family: var(--sans); cursor: none;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ro-btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.ro-form-btns { display: flex; gap: 8px; }
+
+/* Typing */
+.ro-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+.ro-typing span {
+  width: 5px; height: 5px; background: var(--muted); border-radius: 50%;
+  animation: tdot 1.3s infinite;
+}
+.ro-typing span:nth-child(2) { animation-delay: 0.15s; }
+.ro-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+/* Success */
+.ro-success {
+  background: rgba(0,201,167,0.06); border: 1px solid rgba(0,201,167,0.15);
+  border-left: 2px solid var(--teal); border-radius: 8px;
+  padding: 11px 13px; font-size: 12.5px; color: #a7f3d0; line-height: 1.5; margin-top: 4px;
+}
+.ro-success-title { font-weight: 600; font-size: 11px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+/* Input bar */
+.ro-input-bar {
+  padding: 12px 14px; border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-end; gap: 8px;
+  background: rgba(0,0,0,0.2); flex-shrink: 0;
+}
+#ro-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 9px 13px; font-size: 13px;
+  font-family: var(--sans); color: var(--text); outline: none;
+  resize: none; max-height: 96px; line-height: 1.45; transition: border-color 0.15s;
+}
+#ro-input:focus { border-color: rgba(0,201,167,0.3); }
+#ro-input::placeholder { color: var(--muted); }
+#ro-send {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border: none; cursor: none; display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.15s, transform 0.1s;
+}
+#ro-send:hover { opacity: 0.88; transform: scale(1.05); }
+
+.ro-brand {
+  text-align: center; font-size: 10px; color: rgba(255,255,255,0.15);
+  padding: 6px 0 8px; flex-shrink: 0; background: rgba(0,0,0,0.2);
+  text-transform: uppercase; letter-spacing: 0.7px;
+}
+.ro-brand span { color: var(--teal); }
+
 /* ── SECTION WRAPPERS ── */
 .section-header { text-align: center; margin-bottom: 60px; }
 
@@ -842,6 +1072,40 @@ footer {
   </div>
 </section>
 
+<!-- ══ RESPOND-O LIVE WIDGET ══ -->
+<div id="ro-widget">
+  <div id="ro-window">
+    <div class="ro-hd">
+      <div class="ro-hd-av">RO</div>
+      <div>
+        <div class="ro-hd-name">Respond O</div>
+        <div class="ro-hd-status">Online · Replies instantly</div>
+      </div>
+      <div class="ro-hd-btns">
+        <button class="ro-hd-btn" onclick="roReset()" title="New conversation">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+        </button>
+        <button class="ro-hd-btn" onclick="roClose()" title="Close">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="ro-msgs"></div>
+    <div class="ro-input-bar">
+      <textarea id="ro-input" rows="1" placeholder="Ask me anything…" onkeydown="roKey(event)" oninput="roResize(this)"></textarea>
+      <button id="ro-send" onclick="roSend()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+    <div class="ro-brand">Powered by <span>Respond O</span></div>
+  </div>
+  <button id="ro-toggle" onclick="roToggle()">
+    <span id="ro-notif">1</span>
+    <svg id="ro-ico-chat" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <svg id="ro-ico-x" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Respond-O</div>
@@ -1028,6 +1292,58 @@ gsap.from('.cta-box', {
   opacity: 0, y: 20, duration: 0.7, delay: 0.2,
   scrollTrigger: { trigger: '.cta-box', start: 'top 80%' }
 });
+
+// ═══════════════════════════════════════════
+//  RESPOND-O · LIVE CHATBOT ENGINE
+// ═══════════════════════════════════════════
+var KB=[
+  {id:1,title:'Reset your password',desc:'Secure password reset via email.',content:'Go to Settings → Security → Reset Password. A secure link is sent to your registered email. It expires in 30 minutes.'},
+  {id:2,title:'Update payment method',desc:'Add or change your billing card.',content:'Navigate to Billing → Payment Methods. Add a new card or update existing details. Changes apply immediately.'},
+  {id:3,title:'Delete your account',desc:'Permanently close your account.',content:'Account deletion is irreversible. Go to Settings → Account → Delete Account. All data is removed within 30 days.'},
+  {id:4,title:'Change email address',desc:'Update your registered email.',content:'Go to Settings → Profile → Email. Verify the new address via the link sent. Your old email receives a security alert.'},
+  {id:5,title:'Change mobile number',desc:'Update your phone for 2FA.',content:'Go to Settings → Security → Mobile Number. Enter the new number and verify with the OTP sent to it.'},
+  {id:6,title:'Update delivery address',desc:'Manage your saved addresses.',content:'Navigate to Account → Addresses. Add, edit or set a default. Changes do not affect orders already in transit.'},
+];
+var RO_SYS='You are Respond O, an AI customer support assistant on the Respond-O website. Be helpful, concise, warm. Max 2-3 sentences. Respond-O is an AI support chatbot integrating with Salesforce, HubSpot, Zendesk, and custom APIs—self-service, escalation, knowledge base, one script embed. When user intent matches an action, append one tag at end (not shown to user): [ACTION:reset_password] [ACTION:delete_account] [ACTION:update_payment] [ACTION:change_email] [ACTION:change_mobile] [ACTION:change_address] [ACTION:escalate] [ACTION:knowledge_base]';
+var roIsOpen=false,roHist=[],roEl=document.getElementById('ro-msgs'),roIn=document.getElementById('ro-input');
+setTimeout(function(){var b=document.getElementById('ro-notif');if(b)b.style.display='flex';},4000);
+function roToggle(){roIsOpen?roClose():roOpen2();}
+function roOpen2(){roIsOpen=true;document.getElementById('ro-window').classList.add('open');document.getElementById('ro-ico-chat').style.display='none';document.getElementById('ro-ico-x').style.display='block';document.getElementById('ro-notif').style.display='none';if(roEl.children.length===0)roInit();setTimeout(function(){roIn.focus();},300);}
+function roClose(){roIsOpen=false;document.getElementById('ro-window').classList.remove('open');document.getElementById('ro-ico-chat').style.display='block';document.getElementById('ro-ico-x').style.display='none';}
+function roReset(){roEl.innerHTML='';roHist=[];roInit();}
+function roInit(){setTimeout(function(){roBot('Welcome to Respond O. How can I assist you today?');},200);setTimeout(function(){roQRs(['Reset password','Update payment','Change email','Change address','Delete account','Talk to a person','What is Respond O?']);},600);}
+function roBot(t,x){var e=document.createElement('div');e.className='ro-msg bot';e.innerHTML='<div class="ro-av">RO</div><div><div class="ro-bubble">'+roFmt(t)+'</div>'+(x||'')+'</div>';roEl.appendChild(e);roScr();}
+function roUser(t){var e=document.createElement('div');e.className='ro-msg user';e.innerHTML='<div class="ro-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="ro-bubble">'+roEsc(t)+'</div>';roEl.appendChild(e);roScr();}
+function roTyp(){var e=document.createElement('div');e.className='ro-msg bot';e.id='ro-typ';e.innerHTML='<div class="ro-av">RO</div><div class="ro-bubble ro-typing"><span></span><span></span><span></span></div>';roEl.appendChild(e);roScr();}
+function roRmTyp(){var e=document.getElementById('ro-typ');if(e)e.remove();}
+function roQRs(opts){var e=document.createElement('div');e.className='ro-qrs';e.id='ro-qr-set';opts.forEach(function(o){var b=document.createElement('button');b.className='ro-qr';b.textContent=o;b.onclick=function(){roRmQR();roSend(o);};e.appendChild(b);});roEl.appendChild(e);roScr();}
+function roRmQR(){var e=document.getElementById('ro-qr-set');if(e)e.remove();}
+function roScr(){roEl.scrollTop=roEl.scrollHeight;}
+function roFmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+function roEsc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function roKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();roSend();}}
+function roResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+async function roSend(ov){var t=ov||roIn.value.trim();if(!t)return;if(!ov){roIn.value='';roIn.style.height='auto';}roRmQR();roUser(t);roHist.push({role:'user',content:t});roTyp();try{var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:RO_SYS,messages:roHist})});var d=await r.json();var full=(d.content&&d.content[0]&&d.content[0].text)||"I'm having trouble connecting. Please try again.";roRmTyp();var am=full.match(/\[ACTION:([\w_]+)\]/);var cl=full.replace(/\[ACTION:[\w_]+\]/g,'').trim();roHist.push({role:'assistant',content:cl});roBot(cl);if(am)setTimeout(function(){roAct(am[1]);},500);}catch(e){roRmTyp();roBot("I'm having trouble connecting. Please try again.");}}
+function roAct(a){var m={reset_password:roPwd,delete_account:roDel,update_payment:roPay,change_email:roEmail,change_mobile:roMob,change_address:roAddr,escalate:roEsc2,knowledge_base:roKB};if(m[a])m[a]();}
+function roPwd(){roBot("Enter your registered email and I'll send a secure reset link.",'<div class="ro-form"><div class="ro-form-title">Password Reset</div><div class="ro-field"><div class="ro-label">Email</div><input class="ro-inp" id="rfpre" type="email" placeholder="you@company.com"/></div><button class="ro-btn" onclick="roSubPwd()">Send Reset Link</button></div>');}
+function roSubPwd(){var e=document.getElementById('rfpre');e=e&&e.value.trim();if(!e||!e.includes('@'))return;roOk('Reset Link Sent','A secure link has been sent to <strong>'+e+'</strong>. It expires in 30 minutes.');}
+function roDel(){roBot('Account deletion is permanent. Please confirm your details.','<div class="ro-form"><div class="ro-form-title">Delete Account</div><div class="ro-field"><div class="ro-label">Email</div><input class="ro-inp" id="rfdae" type="email" placeholder="you@company.com"/></div><div class="ro-form-btns"><button class="ro-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff" onclick="roSubDel()">Delete Account</button><button class="ro-btn-ghost" onclick="roBot('No problem — your account is safe. Anything else?')">Cancel</button></div></div>');}
+function roSubDel(){var e=document.getElementById('rfdae');e=e&&e.value.trim();if(!e)return;roOk('Request Submitted','Your deletion request has been sent. Confirmation will arrive at <strong>'+e+'</strong> within 24 hours.');}
+function roPay(){roBot('Update your payment details below.','<div class="ro-form"><div class="ro-form-title">Update Payment</div><div class="ro-field"><div class="ro-label">Cardholder Name</div><input class="ro-inp" id="rfpayn" placeholder="Name on card"/></div><div class="ro-grid2"><div class="ro-field"><div class="ro-label">Last 4 digits</div><input class="ro-inp" id="rfpay4" maxlength="4" placeholder="0000"/></div><div class="ro-field"><div class="ro-label">Expiry</div><input class="ro-inp" id="rfpaye" placeholder="MM/YY" maxlength="5"/></div></div><button class="ro-btn" onclick="roSubPay()">Update Payment</button></div>');}
+function roSubPay(){var n=document.getElementById('rfpayn');n=n&&n.value.trim();var d=document.getElementById('rfpay4');d=d&&d.value.trim();if(!n||!d||d.length!==4)return;roOk('Payment Updated','Card ending in <strong>'+d+'</strong> saved for <strong>'+n+'</strong>.');}
+function roEmail(){roBot('Enter your new email address.','<div class="ro-form"><div class="ro-form-title">Change Email</div><div class="ro-field"><div class="ro-label">New Email</div><input class="ro-inp" id="rfcen" type="email" placeholder="new@email.com"/></div><div class="ro-field"><div class="ro-label">Confirm New Email</div><input class="ro-inp" id="rfcec" type="email" placeholder="new@email.com"/></div><button class="ro-btn" onclick="roSubEmail()">Update Email</button></div>');}
+function roSubEmail(){var n=document.getElementById('rfcen');n=n&&n.value.trim();var c=document.getElementById('rfcec');c=c&&c.value.trim();if(!n||n!==c)return;roOk('Verification Sent','A confirmation link has been sent to <strong>'+n+'</strong>.');}
+function roMob(){roBot("Enter your new mobile number and we'll verify with an OTP.",'<div class="ro-form"><div class="ro-form-title">Change Mobile</div><div class="ro-field"><div class="ro-label">New Number</div><input class="ro-inp" id="rfmobn" placeholder="+61 400 000 000"/></div><button class="ro-btn" onclick="roSubMob()">Send OTP</button></div>');}
+function roSubMob(){var n=document.getElementById('rfmobn');n=n&&n.value.trim();if(!n)return;roOk('OTP Sent','A one-time code has been sent to <strong>'+n+'</strong>.');}
+function roAddr(){roBot('Fill in your new address details.','<div class="ro-form"><div class="ro-form-title">Update Address</div><div class="ro-field"><div class="ro-label">Street Address</div><input class="ro-inp" id="rfadr1" placeholder="Street number and name"/></div><div class="ro-grid2"><div class="ro-field"><div class="ro-label">City</div><input class="ro-inp" id="rfadrc" placeholder="City"/></div><div class="ro-field"><div class="ro-label">Postcode</div><input class="ro-inp" id="rfadrp" placeholder="0000"/></div></div><button class="ro-btn" onclick="roSubAddr()">Save Address</button></div>');}
+function roSubAddr(){var c=document.getElementById('rfadrc');c=c&&c.value.trim();if(!c)return;roOk('Address Saved','Your address has been updated and will apply to all future deliveries.');}
+function roEsc2(){roBot("I'll connect you with our support team.",'<div class="ro-form"><div class="ro-form-title">Contact Support</div><div class="ro-grid2"><div class="ro-field"><div class="ro-label">Name</div><input class="ro-inp" id="rfescn" placeholder="Full name"/></div><div class="ro-field"><div class="ro-label">Email</div><input class="ro-inp" id="rfesce" type="email" placeholder="you@email.com"/></div></div><div class="ro-field"><div class="ro-label">Category</div><select class="ro-sel" id="rfesccat"><option value="">Select…</option><option>Billing Issue</option><option>Account Access</option><option>Technical Problem</option><option>Refund Request</option><option>Other</option></select></div><div class="ro-field"><div class="ro-label">Description</div><textarea class="ro-ta" id="rfescd" rows="3" placeholder="Describe your issue…"></textarea></div><button class="ro-btn" onclick="roSubEsc()">Send to Support Team</button></div>');}
+function roSubEsc(){var n=document.getElementById('rfescn');n=n&&n.value.trim();var e=document.getElementById('rfesce');e=e&&e.value.trim();if(!n||!e)return;roOk('Ticket Raised','Your case has been sent to our support team, <strong>'+n+'</strong>. Expect a reply at <strong>'+e+'</strong> within 2 business hours.');}
+function roKB(){var w=document.createElement('div');w.className='ro-msg bot';var a=KB.map(function(x){return '<div class="ro-article" onclick="roArt('+x.id+')"><div class="ro-article-title">'+x.title+'</div><div class="ro-article-desc">'+x.desc+'</div></div>';}).join('');w.innerHTML='<div class="ro-av">RO</div><div><div class="ro-bubble">Here are some help articles that may assist you:</div><div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;max-width:290px">'+a+'</div></div>';roEl.appendChild(w);roScr();}
+function roArt(id){var a=KB.find(function(x){return x.id===id;});if(!a)return;roBot('<strong>'+a.title+'</strong><br><br>'+a.content);setTimeout(function(){roQRs(['That helped','Need more help','Speak with support']);},400);}
+function roOk(title,msg){var e=document.createElement('div');e.className='ro-msg bot';e.innerHTML='<div class="ro-av">RO</div><div><div class="ro-success"><div class="ro-success-title">&#10003; '+title+'</div>'+msg+'</div></div>';roEl.appendChild(e);roScr();setTimeout(function(){roQRs(['Anything else?','All good']);},600);}
+setTimeout(function(){document.querySelectorAll('.ro-hd-btn,#ro-toggle,.ro-btn,.ro-btn-ghost,.ro-qr,.ro-article').forEach(function(el){el.addEventListener('mouseenter',function(){cursor.style.width='16px';cursor.style.height='16px';ring.style.width='52px';ring.style.height='52px';ring.style.borderColor='rgba(0,201,167,0.6)';});el.addEventListener('mouseleave',function(){cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(0,201,167,0.4)';});});},500);
+
 </script>
 </body>
 </html>
