@@ -1,42 +1,137 @@
-useEffect(() => {
-  const ctx = gsap.context(() => {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Respond-O</title>
 
-    // HERO animation
-    gsap.fromTo(
-      heroRef.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 1.2 }
-    );
+  <!-- GSAP CDN (safe for GitHub Pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-    // SECTION animations (SAFE + SCOPED)
-    sectionRefs.current.forEach((sec) => {
-      if (!sec) return;
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
 
-      gsap.fromTo(sec,
-        { opacity: 0.2, scale: 0.98 },
-        {
-          opacity: 1,
-          scale: 1,
-          scrollTrigger: {
-            trigger: sec,
-            start: "top 80%",
-            end: "bottom 60%",
-            scrub: true,
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 10%;
+    }
 
-            // 🔥 CRITICAL FIXES
-            invalidateOnRefresh: true,
-            anticipatePin: 1,
-          }
+    h1 {
+      font-size: 80px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 20px;
+      color: #aaa;
+      max-width: 600px;
+    }
+
+    .hero {
+      text-align: center;
+    }
+
+    .cta {
+      text-align: center;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 16px 32px;
+      font-size: 18px;
+      border-radius: 999px;
+      border: none;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+    }
+
+    /* subtle Apple-like fade sections */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(60px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="hero fade-section">
+    <h1>Respond-O</h1>
+    <p>AI chatbot that connects your knowledge base, CRMs, and Microsoft Teams.</p>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="fade-section">
+    <h2>Smarter Conversations</h2>
+    <p>Ingest your documents and deliver accurate answers instantly.</p>
+  </section>
+
+  <section class="fade-section">
+    <h2>Unified CRM Access</h2>
+    <p>Connect multiple CRMs and access customer data in real time.</p>
+  </section>
+
+  <section class="fade-section">
+    <h2>Works Where You Work</h2>
+    <p>Seamless integration with Microsoft Teams and your workflow tools.</p>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta fade-section">
+    <h2>Start Automating Today</h2>
+    <button>Get Started</button>
+  </section>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Animate each section
+    document.querySelectorAll(".fade-section").forEach((section) => {
+      gsap.to(section, {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 85%",
         }
-      );
+      });
     });
 
-  });
+    // Optional: smooth hero intro
+    gsap.from(".hero h1", {
+      opacity: 0,
+      y: 40,
+      duration: 1.2
+    });
 
-  return () => {
-    // 🔥 kills ALL GSAP + ScrollTriggers cleanly
-    ctx.revert();
-    ScrollTrigger.getAll().forEach(t => t.kill());
-  };
+    gsap.from(".hero p", {
+      opacity: 0,
+      y: 20,
+      duration: 1.2,
+      delay: 0.3
+    });
 
-}, []);
+    ScrollTrigger.refresh();
+  </script>
+
+</body>
+</html>
