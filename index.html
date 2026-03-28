@@ -7,9 +7,13 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
 <style>
 /* =========================
-   BASE
+   BASE (APPLE CLEAN SYSTEM)
 ========================= */
 * {
   margin:0;
@@ -25,17 +29,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* soft Apple-like lighting */
+/* subtle Apple lighting */
 body::before {
   content:"";
   position:fixed;
   inset:0;
   z-index:-1;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.06), transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(120,120,255,0.08), transparent 45%),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(120,120,255,0.07), transparent 45%),
     radial-gradient(circle at 50% 90%, rgba(255,120,200,0.05), transparent 50%);
-  filter: blur(80px);
+  filter: blur(70px);
 }
 
 /* =========================
@@ -45,9 +49,9 @@ nav {
   position:fixed;
   top:0;
   width:100%;
-  z-index:1000;
+  z-index:999;
   backdrop-filter: blur(20px);
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.45);
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 
@@ -63,14 +67,12 @@ nav {
 nav a {
   color:rgba(255,255,255,0.7);
   text-decoration:none;
+  margin-left:18px;
   font-size:14px;
-  margin-left:20px;
 }
 
-nav a:hover { color:#fff; }
-
 /* =========================
-   SECTION SYSTEM (APPLE STYLE)
+   SECTIONS (PINNED STYLE)
 ========================= */
 section {
   min-height:100vh;
@@ -79,57 +81,53 @@ section {
   justify-content:center;
   align-items:center;
   text-align:center;
-  padding:140px 24px;
-  opacity:0;
-  transform: translateY(40px);
-  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-section.active {
-  opacity:1;
-  transform: translateY(0);
+  padding:120px 24px;
 }
 
 /* =========================
-   TYPOGRAPHY (VERY IMPORTANT)
+   HERO VIDEO (APPLE STYLE)
 ========================= */
-h1 {
+.hero {
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+}
+
+.hero video {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  min-width:100%;
+  min-height:100%;
+  object-fit:cover;
+  opacity:0.55;
+}
+
+.hero-content {
+  position:relative;
+  z-index:2;
+}
+
+.hero h1 {
   font-size:72px;
   font-weight:600;
   letter-spacing:-2px;
   line-height:1.05;
-  max-width:900px;
-}
-
-h2 {
-  font-size:44px;
-  font-weight:600;
-  letter-spacing:-1.2px;
-  margin-bottom:16px;
-}
-
-p {
-  font-size:18px;
-  color:rgba(255,255,255,0.65);
-  max-width:620px;
-  line-height:1.6;
-  margin-top:16px;
-}
-
-/* =========================
-   HERO (APPLE STYLE STORY)
-========================= */
-.hero h1 span {
-  display:block;
 }
 
 .hero p {
-  margin-top:28px;
+  margin-top:20px;
+  font-size:18px;
+  color:rgba(255,255,255,0.7);
+  max-width:600px;
 }
 
-/* CTA */
-.cta-btn {
-  margin-top:32px;
+/* =========================
+   BUTTON
+========================= */
+.btn {
+  margin-top:28px;
   padding:14px 26px;
   border-radius:999px;
   border:none;
@@ -140,73 +138,104 @@ p {
   transition: transform 0.2s ease;
 }
 
-.cta-btn:hover {
+.btn:hover {
   transform: scale(1.05);
 }
 
 /* =========================
-   FEATURES (CLEAN GRID)
+   PINNED FEATURE SECTION
 ========================= */
-.grid {
-  margin-top:50px;
-  display:grid;
-  gap:20px;
-  max-width:1000px;
-  width:100%;
+.pin-section {
+  height:300vh;
+  position:relative;
 }
 
-@media(min-width:768px){
-  .grid {
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-
-.card {
-  padding:26px;
-  border-radius:18px;
-  background: rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-}
-
-.card h3 {
-  font-size:18px;
-  margin-bottom:10px;
-}
-
-.card p {
-  font-size:14px;
-  color:rgba(255,255,255,0.6);
-}
-
-/* =========================
-   DEMO BLOCK (APPLE STYLE SIMPLE)
-========================= */
-.demo {
-  width:100%;
-  max-width:800px;
-  height:420px;
-  border-radius:28px;
-  background: rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
+.pin-wrapper {
+  position:sticky;
+  top:0;
+  height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-top:50px;
-  font-size:22px;
-  color:rgba(255,255,255,0.7);
+  flex-direction:column;
+}
+
+.feature-title {
+  font-size:54px;
+  font-weight:600;
+  letter-spacing:-1.5px;
+}
+
+.feature-sub {
+  margin-top:16px;
+  max-width:600px;
+  color:rgba(255,255,255,0.65);
+}
+
+/* =========================
+   FEATURE CARDS (REVEAL)
+========================= */
+.cards {
+  margin-top:60px;
+  display:flex;
+  gap:20px;
+}
+
+.card {
+  width:220px;
+  padding:20px;
+  border-radius:18px;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  opacity:0;
+  transform: translateY(40px);
+}
+
+/* =========================
+   CRM DEMO (REAL UI)
+========================= */
+.crm {
+  display:flex;
+  width:90%;
+  max-width:1000px;
+  height:520px;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+  margin-top:40px;
+}
+
+.sidebar {
+  width:260px;
+  background: rgba(255,255,255,0.03);
+  padding:16px;
+}
+
+.inbox-item {
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+  background: rgba(255,255,255,0.04);
+  cursor:pointer;
+}
+
+.main {
+  flex:1;
+  padding:20px;
+  background: rgba(0,0,0,0.4);
+}
+
+.chat-box {
+  margin-top:20px;
+  padding:16px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.04);
+  height:320px;
 }
 
 /* =========================
    WAITLIST
 ========================= */
-.form {
-  display:flex;
-  gap:10px;
-  margin-top:30px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
 input {
   padding:14px 18px;
   border-radius:999px;
@@ -214,111 +243,155 @@ input {
   background:rgba(255,255,255,0.03);
   color:#fff;
   width:260px;
+  margin-top:20px;
 }
 
 /* =========================
-   RESPONSIVE
+   TYPOGRAPHY
 ========================= */
-@media(max-width:768px){
-  h1 { font-size:42px; }
-  h2 { font-size:28px; }
+h2 {
+  font-size:48px;
+  letter-spacing:-1.5px;
+}
+
+p {
+  color:rgba(255,255,255,0.65);
+  max-width:600px;
+  line-height:1.6;
 }
 </style>
 </head>
 
 <body>
 
+<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <div>Respond O</div>
     <div>
       <a href="#features">Features</a>
-      <a href="#demo">Demo</a>
+      <a href="#crm">CRM Demo</a>
     </div>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO VIDEO -->
 <section class="hero">
-  <h1>
-    <span>One chat widget.</span>
-    <span>All your CRMs.</span>
-    <span>Zero friction.</span>
-  </h1>
+  <video autoplay muted loop>
+    <source src="https://cdn.coverr.co/videos/coverr-working-in-the-office-1579/1080p.mp4" type="video/mp4">
+  </video>
 
-  <p>
-    A unified system for customer conversations — designed to feel invisible, fast, and effortless.
-  </p>
+  <div class="hero-content">
+    <h1>One Chat.<br>All Systems.</h1>
+    <p>Unified customer communication designed for speed, scale, and clarity.</p>
 
-  <div class="form">
-    <input id="email" placeholder="Enter your email" />
-    <button class="cta-btn" onclick="join()">Join Waitlist</button>
+    <input id="email" placeholder="Enter email"/>
+    <br>
+    <button class="btn" onclick="trackWaitlist()">Join Waitlist</button>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section id="features">
-  <h2>Everything connected.</h2>
-  <p>All your tools working together as one seamless system.</p>
+<!-- PINNED FEATURES -->
+<section class="pin-section" id="features">
 
-  <div class="grid">
-    <div class="card">
-      <h3>Multi-CRM Sync</h3>
-      <p>Keep all customer data consistent in real time.</p>
-    </div>
+  <div class="pin-wrapper">
+    <h2 class="feature-title">Built for scale.</h2>
+    <p class="feature-sub">Every interaction flows seamlessly across your systems.</p>
 
-    <div class="card">
-      <h3>Automation</h3>
-      <p>Resolve repetitive tasks instantly.</p>
-    </div>
-
-    <div class="card">
-      <h3>Enterprise Scale</h3>
-      <p>Built for reliability and growth.</p>
+    <div class="cards">
+      <div class="card">Multi CRM Sync</div>
+      <div class="card">AI Automation</div>
+      <div class="card">Enterprise Security</div>
     </div>
   </div>
+
 </section>
 
-<!-- DEMO -->
-<section id="demo">
-  <h2>See it in action</h2>
-  <p>A clean experience designed for speed.</p>
+<!-- CRM DEMO -->
+<section id="crm">
 
-  <div class="demo">
-    Live Widget Preview
+  <h2>Real CRM Experience</h2>
+  <p>Not a mockup — a working interface simulation.</p>
+
+  <div class="crm">
+    <div class="sidebar">
+      <div class="inbox-item" onclick="selectUser('John')">John — Order Issue</div>
+      <div class="inbox-item" onclick="selectUser('Sarah')">Sarah — Refund</div>
+      <div class="inbox-item" onclick="selectUser('Mike')">Mike — Support</div>
+    </div>
+
+    <div class="main">
+      <h3 id="chatTitle">Select a conversation</h3>
+      <div class="chat-box" id="chatBox">Messages appear here...</div>
+      <button class="btn" onclick="resolve()">Auto Resolve</button>
+    </div>
   </div>
-</section>
 
-<!-- CTA -->
-<section>
-  <h2>Start building with Respond O</h2>
-  <p>Minimal. Fast. Designed to scale.</p>
-  <button class="cta-btn" onclick="join()">Get Early Access</button>
 </section>
 
 <script>
 
-/* scroll reveal (Apple-like simplicity) */
-const sections = document.querySelectorAll("section");
+/* =========================
+   ANALYTICS SYSTEM
+========================= */
+const analytics = {
+  events: [],
+  track(event, data={}) {
+    this.events.push({event, data, time:Date.now()});
+    console.log("📊", event, data);
+    localStorage.setItem("analytics", JSON.stringify(this.events));
+  }
+};
 
-const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting) e.target.classList.add("active");
-  });
-},{ threshold:0.2 });
+/* =========================
+   GSAP PIN + SCROLL STORY
+========================= */
+gsap.registerPlugin(ScrollTrigger);
 
-sections.forEach(s=>obs.observe(s));
+gsap.to(".cards .card", {
+  opacity:1,
+  y:0,
+  stagger:0.2,
+  scrollTrigger:{
+    trigger:".pin-section",
+    start:"top center",
+    end:"bottom center",
+    scrub:true
+  }
+});
 
-/* waitlist */
-function join(){
-  const email = document.getElementById("email")?.value;
+/* =========================
+   WAITLIST TRACKING
+========================= */
+function trackWaitlist(){
+  const email = document.getElementById("email").value;
   if(!email) return alert("Enter email");
 
   let list = JSON.parse(localStorage.getItem("waitlist") || "[]");
   list.push(email);
   localStorage.setItem("waitlist", JSON.stringify(list));
 
+  analytics.track("waitlist_signup", {email});
+
   alert("You're on the waitlist 🚀");
+}
+
+/* =========================
+   CRM DEMO INTERACTION
+========================= */
+function selectUser(name){
+  document.getElementById("chatTitle").innerText = name;
+  document.getElementById("chatBox").innerText =
+    "Loading conversation with " + name + "...";
+
+  analytics.track("crm_select_user", {name});
+}
+
+function resolve(){
+  document.getElementById("chatBox").innerText =
+    "✔ Case auto-resolved in 2.4s via AI automation";
+
+  analytics.track("crm_auto_resolve", {});
 }
 
 </script>
