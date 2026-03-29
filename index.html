@@ -839,6 +839,123 @@ footer {
 }
 
 .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+══════════════════════════════════════ */
+
+/* Hide custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  #cursor, #cursor-ring { display: none; }
+  button, a, .feature-card, .crm-logo,
+  .nav-cta, .btn-primary, .btn-ghost,
+  .ro-btn, .ro-btn-ghost, .ro-qr, .ro-article,
+  .ro-hd-btn, #ro-toggle, #ro-send, .ro-sel, .ro-inp { cursor: pointer; }
+}
+
+@media (max-width: 768px) {
+
+  /* ── NAV ── */
+  nav { padding: 18px 20px; }
+  nav.scrolled { padding: 14px 20px; }
+  .nav-links { display: none; }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 20px 60px; min-height: auto; }
+
+  /* ── HERO ── */
+  .hero { padding-top: 110px; padding-bottom: 60px; }
+  .hero h1 { font-size: clamp(42px, 11vw, 72px); letter-spacing: -2px; }
+  .hero-sub { font-size: 16px; margin: 20px auto 36px; padding: 0 8px; }
+  .hero-eyebrow { margin-bottom: 24px; font-size: 11px; }
+  .hero-actions {
+    flex-direction: column; gap: 10px; width: 100%;
+    margin-bottom: 48px;
+  }
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; padding: 14px 24px; }
+
+  /* ── HERO PREVIEW ── */
+  .hero-preview { max-width: 100%; }
+  .preview-body { padding: 16px 14px; gap: 10px; }
+  .preview-bubble { font-size: 12px; }
+
+  /* ── STATS ── */
+  .stats-bar { flex-direction: column; margin-top: 32px; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); padding: 18px 24px; }
+  .stat:last-child { border-bottom: none; }
+  .stat-num { font-size: 28px; }
+
+  /* ── PROBLEM ── */
+  .problem-word { font-size: clamp(28px, 7vw, 52px); letter-spacing: -1px; }
+
+  /* ── FEATURES ── */
+  .features-section { padding-top: 80px; }
+  .features-grid { grid-template-columns: 1fr; gap: 12px; }
+  .section-header { margin-bottom: 36px; }
+  .section-title { font-size: clamp(28px, 7vw, 48px); letter-spacing: -1px; }
+
+  /* ── INTEGRATIONS ── */
+  .integrations { gap: 36px; }
+  .crm-logos {
+    flex-wrap: wrap;
+    border-radius: 12px;
+  }
+  .crm-logo {
+    flex: 1 1 45%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 20px 16px;
+  }
+  .crm-logo:nth-child(odd) { border-right: 1px solid var(--border); }
+  .crm-logo:last-child { border-bottom: none; flex: 1 1 100%; }
+
+  /* ── HOW IT WORKS ── */
+  .how-steps {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .how-steps::before { display: none; }
+  .how-step { padding: 0 16px; }
+
+  /* ── CTA ── */
+  .cta-section h2 { font-size: clamp(32px, 8vw, 56px); letter-spacing: -1px; }
+  .cta-section p { font-size: 16px; }
+  .cta-box {
+    flex-direction: column;
+    width: 100%;
+    max-width: 340px;
+    padding: 8px;
+  }
+  .cta-input { width: 100%; padding: 12px 16px; }
+  .cta-box .btn-primary { width: 100%; justify-content: center; }
+
+  /* ── FOOTER ── */
+  footer {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding: 32px 20px;
+  }
+
+  /* ── CHATBOT WIDGET ── */
+  #ro-widget { bottom: 16px; right: 16px; }
+  #ro-window {
+    position: fixed;
+    bottom: 0; right: 0; left: 0;
+    width: 100%;
+    height: 85vh;
+    border-radius: 20px 20px 0 0;
+    transform-origin: bottom center;
+  }
+  #ro-window.open { transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 400px) {
+  .hero h1 { font-size: 36px; }
+  nav { padding: 16px; }
+  .nav-cta { padding: 8px 16px; font-size: 13px; }
+}
 </style>
 </head>
 <body>
