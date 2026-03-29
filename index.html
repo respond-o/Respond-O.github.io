@@ -1385,10 +1385,10 @@ document.querySelectorAll('button, a, .feature-card, .crm-logo').forEach(el => {
   });
 });
 
-// ── PARTICLES ──
+// ── DYNAMIC SKY ENGINE ──
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
-let W, H, particles = [];
+let W, H;
 
 function resizeCanvas() {
   W = canvas.width = window.innerWidth;
@@ -1397,30 +1397,364 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-for (let i = 0; i < 80; i++) {
-  particles.push({
-    x: Math.random() * 1920, y: Math.random() * 2000,
-    r: Math.random() * 1.2 + 0.3,
-    vx: (Math.random() - 0.5) * 0.15,
-    vy: -Math.random() * 0.2 - 0.05,
-    a: Math.random() * 0.5 + 0.1
+// Read current palette from CSS vars
+function getPrimaryRGB() {
+  const hex = getComputedStyle(document.documentElement).getPropertyValue('--teal').trim();
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+function getSecondaryRGB() {
+  const hex = getComputedStyle(document.documentElement).getPropertyValue('--blue').trim();
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+
+// ── STARS ──
+const stars = [];
+for (let i = 0; i < 220; i++) {
+  stars.push({
+    x: Math.random(), y: Math.random(),   // 0-1 normalized
+    r: Math.random() * 1.4 + 0.2,
+    base_a: Math.random() * 0.7 + 0.15,
+    a: 0,
+    twinkle_speed: Math.random() * 0.02 + 0.005,
+    twinkle_offset: Math.random() * Math.PI * 2,
+    color: Math.random() > 0.85 ? 'warm' : Math.random() > 0.6 ? 'cool' : 'white',
   });
 }
 
-function drawParticles() {
-  ctx.clearRect(0, 0, W, H);
-  const scrollY = window.scrollY;
-  particles.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x % W, (p.y - scrollY * 0.1) % (H + 200), p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(0,201,167,${p.a})`;
-    ctx.fill();
-    p.x += p.vx; p.y += p.vy;
-    if (p.y < -10) p.y = H + 10;
+// ── SHOOTING STARS ──
+const shooters = [];
+function spawnShooter() {
+  shooters.push({
+    x: Math.random() * W,
+    y: Math.random() * H * 0.5,
+    len: Math.random() * 120 + 60,
+    speed: Math.random() * 8 + 6,
+    angle: Math.PI / 4 + (Math.random() - 0.5) * 0.4,
+    a: 1, life: 1,
   });
-  requestAnimationFrame(drawParticles);
 }
-drawParticles();
+
+// ── RAIN ──
+const raindrops = [];
+function initRain(count) {
+  raindrops.length = 0;
+  for (let i = 0; i < count; i++) {
+    raindrops.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      len: Math.random() * 18 + 8,
+      speed: Math.random() * 6 + 10,
+      a: Math.random() * 0.3 + 0.1,
+    });
+  }
+}
+
+// ── SNOW ──
+const snowflakes = [];
+function initSnow(count) {
+  snowflakes.length = 0;
+  for (let i = 0; i < count; i++) {
+    snowflakes.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 3 + 1,
+      speed: Math.random() * 1.2 + 0.4,
+      drift: (Math.random() - 0.5) * 0.5,
+      a: Math.random() * 0.6 + 0.3,
+      wobble: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+// ── AURORA (night/dusk) ──
+const auroraWaves = [];
+for (let i = 0; i < 5; i++) {
+  auroraWaves.push({
+    offset: Math.random() * Math.PI * 2,
+    speed: Math.random() * 0.004 + 0.002,
+    amplitude: Math.random() * 40 + 20,
+    y_base: 0.12 + i * 0.04,
+    thickness: Math.random() * 60 + 30,
+    hue_shift: i * 40,
+  });
+}
+
+// ── LIGHTNING ──
+let lightningTimer = 0;
+let lightningFlash = 0;
+
+function drawLightning(x, y, angle, length, depth) {
+  if (depth > 4 || length < 10) return;
+  const c = { r:200, g:180, b:255 };
+  ctx.strokeStyle = `rgba(${c.r},${c.g},${c.b},${0.8 - depth * 0.15})`;
+  ctx.lineWidth = Math.max(0.5, 3 - depth * 0.6);
+  const endX = x + Math.cos(angle) * length;
+  const endY = y + Math.sin(angle) * length;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(endX, endY); ctx.stroke();
+  if (Math.random() > 0.4) {
+    drawLightning(endX, endY, angle + (Math.random()-0.5)*1.2, length*0.65, depth+1);
+  }
+  drawLightning(endX, endY, angle + (Math.random()-0.5)*0.6, length*0.7, depth+1);
+}
+
+// ── FOG WISPS ──
+const fogWisps = [];
+for (let i = 0; i < 8; i++) {
+  fogWisps.push({
+    x: Math.random() * W,
+    y: Math.random() * H * 0.7 + H * 0.15,
+    w: Math.random() * 400 + 200,
+    h: Math.random() * 60 + 30,
+    speed: (Math.random() - 0.5) * 0.3,
+    a: Math.random() * 0.06 + 0.02,
+  });
+}
+
+// ── CLOUD PUFFS ──
+const clouds = [];
+for (let i = 0; i < 6; i++) {
+  clouds.push({
+    x: Math.random(),
+    y: Math.random() * 0.4 + 0.05,
+    scale: Math.random() * 0.8 + 0.5,
+    speed: Math.random() * 0.00008 + 0.00003,
+    a: Math.random() * 0.06 + 0.02,
+  });
+}
+
+let t = 0;
+let currentMode = 'night'; // updated by weather engine
+
+function getSkyMode() {
+  const badge = document.getElementById('weather-badge');
+  if (!badge) return 'night';
+  const label = badge.textContent;
+  if (label.includes('Rain'))    return 'rain';
+  if (label.includes('Storm'))   return 'storm';
+  if (label.includes('Snow'))    return 'snow';
+  if (label.includes('Fog'))     return 'fog';
+  if (label.includes('Cloud'))   return 'cloudy';
+  if (label.includes('Night'))   return 'night';
+  if (label.includes('Midnight'))return 'night';
+  if (label.includes('Dusk'))    return 'dusk';
+  if (label.includes('Dawn'))    return 'dawn';
+  if (label.includes('Scorch'))  return 'hot';
+  if (label.includes('Wind'))    return 'windy';
+  return 'day';
+}
+
+// Lazy-init weather-specific arrays when mode changes
+let lastMode = '';
+function onModeChange(mode) {
+  if (mode === 'rain' || mode === 'storm') initRain(mode === 'storm' ? 300 : 180);
+  if (mode === 'snow') initSnow(150);
+}
+
+function drawFrame() {
+  ctx.clearRect(0, 0, W, H);
+  t++;
+  const mode = getSkyMode();
+  if (mode !== lastMode) { onModeChange(mode); lastMode = mode; }
+
+  const p1 = getPrimaryRGB();
+  const p2 = getSecondaryRGB();
+  const scrollY = window.scrollY;
+  const parallax = scrollY * 0.08;
+
+  // ── AURORA (night/dusk/dawn) ──
+  if (mode === 'night' || mode === 'dusk' || mode === 'dawn') {
+    ctx.save();
+    auroraWaves.forEach((w, wi) => {
+      const grad = ctx.createLinearGradient(0, 0, W, 0);
+      const hue = (wi * 60 + t * 0.3) % 360;
+      grad.addColorStop(0,   `hsla(${hue},80%,60%,0)`);
+      grad.addColorStop(0.3, `hsla(${hue},80%,60%,0.04)`);
+      grad.addColorStop(0.5, `hsla(${(hue+40)%360},70%,65%,0.07)`);
+      grad.addColorStop(0.7, `hsla(${hue},80%,60%,0.04)`);
+      grad.addColorStop(1,   `hsla(${hue},80%,60%,0)`);
+      ctx.fillStyle = grad;
+      const yBase = (w.y_base * H) - parallax * 0.3;
+      const yWave = Math.sin(t * w.speed + w.offset) * w.amplitude;
+      ctx.beginPath();
+      ctx.ellipse(W/2, yBase + yWave, W * 0.8, w.thickness, 0, 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  // ── STARS (night/dusk/dawn/clear) ──
+  const showStars = ['night','dusk','dawn','day','afternoon','morning','windy'].includes(mode);
+  const starOpacity = mode === 'night' ? 1 : mode === 'dusk' || mode === 'dawn' ? 0.6 : 0.2;
+  if (showStars) {
+    stars.forEach(s => {
+      s.a = s.base_a * starOpacity * (0.5 + 0.5 * Math.sin(t * s.twinkle_speed + s.twinkle_offset));
+      const sx = s.x * W;
+      const sy = (s.y * H * 3 - parallax) % H;
+      if (sy < 0) return;
+      let r, g, b;
+      if (s.color === 'warm') { r=p1.r; g=p1.g; b=p1.b; }
+      else if (s.color === 'cool') { r=p2.r; g=p2.g; b=p2.b; }
+      else { r=241; g=245; b=249; }
+      // Glow for larger stars
+      if (s.r > 1.1) {
+        const glow = ctx.createRadialGradient(sx,sy,0,sx,sy,s.r*4);
+        glow.addColorStop(0, `rgba(${r},${g},${b},${s.a * 0.4})`);
+        glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(sx, sy, s.r*4, 0, Math.PI*2); ctx.fill();
+      }
+      ctx.fillStyle = `rgba(${r},${g},${b},${s.a})`;
+      ctx.beginPath(); ctx.arc(sx, sy, s.r, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  // ── SHOOTING STARS ──
+  if (mode === 'night' || mode === 'dusk') {
+    if (Math.random() < 0.003) spawnShooter();
+    for (let i = shooters.length - 1; i >= 0; i--) {
+      const s = shooters[i];
+      s.life -= 0.018;
+      if (s.life <= 0) { shooters.splice(i,1); continue; }
+      const grad = ctx.createLinearGradient(
+        s.x, s.y,
+        s.x - Math.cos(s.angle)*s.len, s.y - Math.sin(s.angle)*s.len
+      );
+      grad.addColorStop(0, `rgba(255,255,255,${s.life * 0.9})`);
+      grad.addColorStop(1, `rgba(255,255,255,0)`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - Math.cos(s.angle)*s.len, s.y - Math.sin(s.angle)*s.len);
+      ctx.stroke();
+      s.x += Math.cos(s.angle) * s.speed;
+      s.y += Math.sin(s.angle) * s.speed;
+    }
+  }
+
+  // ── RAIN ──
+  if (mode === 'rain' || mode === 'storm') {
+    ctx.save();
+    raindrops.forEach(d => {
+      ctx.strokeStyle = `rgba(${p2.r},${p2.g},${p2.b},${d.a})`;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - 2, d.y + d.len);
+      ctx.stroke();
+      d.y += d.speed;
+      d.x -= 1.5;
+      if (d.y > H) { d.y = -d.len; d.x = Math.random() * W; }
+    });
+    ctx.restore();
+  }
+
+  // ── LIGHTNING ──
+  if (mode === 'storm') {
+    lightningTimer--;
+    if (lightningFlash > 0) {
+      ctx.fillStyle = `rgba(200,180,255,${lightningFlash * 0.04})`;
+      ctx.fillRect(0, 0, W, H);
+      lightningFlash -= 0.08;
+    }
+    if (lightningTimer <= 0) {
+      lightningTimer = Math.random() * 300 + 100;
+      lightningFlash = 1;
+      ctx.save();
+      drawLightning(Math.random() * W * 0.8 + W*0.1, 0, Math.PI/2 + (Math.random()-0.5)*0.5, H*0.4, 0);
+      ctx.restore();
+    }
+  }
+
+  // ── SNOW ──
+  if (mode === 'snow') {
+    snowflakes.forEach(f => {
+      f.wobble += 0.02;
+      f.x += f.drift + Math.sin(f.wobble) * 0.5;
+      f.y += f.speed;
+      if (f.y > H) { f.y = -f.r; f.x = Math.random() * W; }
+      ctx.fillStyle = `rgba(186,230,253,${f.a})`;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  // ── FOG ──
+  if (mode === 'fog') {
+    fogWisps.forEach(w => {
+      w.x += w.speed;
+      if (w.x > W + w.w/2) w.x = -w.w/2;
+      if (w.x < -w.w/2) w.x = W + w.w/2;
+      const grad = ctx.createRadialGradient(w.x, w.y, 0, w.x, w.y, w.w/2);
+      grad.addColorStop(0, `rgba(148,163,184,${w.a})`);
+      grad.addColorStop(1, `rgba(148,163,184,0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.ellipse(w.x, w.y, w.w/2, w.h/2, 0, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  // ── CLOUDS ──
+  if (mode === 'cloudy' || mode === 'hot') {
+    clouds.forEach(c => {
+      c.x += c.speed;
+      if (c.x > 1.3) c.x = -0.3;
+      const cx = c.x * W;
+      const cy = c.y * H - parallax * 0.2;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 120 * c.scale);
+      grad.addColorStop(0, `rgba(${p1.r},${p1.g},${p1.b},${c.a * 0.6})`);
+      grad.addColorStop(0.5, `rgba(${p2.r},${p2.g},${p2.b},${c.a * 0.3})`);
+      grad.addColorStop(1, `rgba(${p2.r},${p2.g},${p2.b},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.ellipse(cx, cy, 140*c.scale, 55*c.scale, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx-60*c.scale, cy+10*c.scale, 90*c.scale, 40*c.scale, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx+70*c.scale, cy+15*c.scale, 80*c.scale, 35*c.scale, 0, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  // ── HEAT SHIMMER (hot) ──
+  if (mode === 'hot' && t % 3 === 0) {
+    const shimmerY = H * 0.7 + Math.sin(t * 0.05) * 20;
+    const grad = ctx.createLinearGradient(0, shimmerY, 0, shimmerY + 80);
+    grad.addColorStop(0, `rgba(${p1.r},${p1.g},${p1.b},0.03)`);
+    grad.addColorStop(1, `rgba(${p1.r},${p1.g},${p1.b},0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, shimmerY, W, 80);
+  }
+
+  // ── WIND STREAKS ──
+  if (mode === 'windy') {
+    if (t % 40 === 0) {
+      for (let i = 0; i < 3; i++) {
+        const wy = Math.random() * H;
+        const wlen = Math.random() * 150 + 50;
+        ctx.save();
+        ctx.strokeStyle = `rgba(${p1.r},${p1.g},${p1.b},${Math.random()*0.08+0.02})`;
+        ctx.lineWidth = Math.random() * 1.5 + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-10, wy);
+        ctx.bezierCurveTo(wlen*0.3, wy-10, wlen*0.7, wy+10, wlen, wy);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+
+  // ── AMBIENT RADIAL GLOW (always) ──
+  const glowGrad = ctx.createRadialGradient(W/2, H*0.3, 0, W/2, H*0.3, W*0.6);
+  glowGrad.addColorStop(0, `rgba(${p1.r},${p1.g},${p1.b},0.04)`);
+  glowGrad.addColorStop(0.5, `rgba(${p2.r},${p2.g},${p2.b},0.02)`);
+  glowGrad.addColorStop(1, `rgba(${p2.r},${p2.g},${p2.b},0)`);
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
 
 // ── NAV SCROLL ──
 window.addEventListener('scroll', () => {
